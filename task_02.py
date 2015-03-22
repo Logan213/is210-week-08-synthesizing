@@ -6,7 +6,7 @@ import authentication
 import getpass
 
 
-def login(username, maxattempts):
+def login(username, maxattempts=1):
     """str, int(optional). Prompt for password and tests if correct or not.
 
     Args:
@@ -21,15 +21,15 @@ def login(username, maxattempts):
 
     """
     authenticated = False
+    attleft = 'Incorrect username or password. You have {} attempts left.'
 
-    while not authenticated:
+    while not authenticated and maxattempts != 0:
         passinput = getpass.getpass()
         print passinput
-        cred = authentication.authenticate(username, passinput)
-        if cred == 'Yes':
-            authenticated = True
-            print 'Correct'
-        elif cred == 'No':
-            print 'Incorrect'
-
-    print 'after loop'
+        authenticated = authentication.authenticate(username, passinput)
+        if authenticated is True:
+            return authenticated
+        elif not authenticated and maxattempts != 0:
+            maxattempts -= 1
+            print attleft.format(maxattempts)
+    return authenticated
